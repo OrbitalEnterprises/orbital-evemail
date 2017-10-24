@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+      <groupId>enterprises.orbital.evemail</groupId>
+      <artifactId>parent</artifactId>
+      <version>1.0.0</version>
+  </parent>
+  <artifactId>account</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <name>EveMail Account Library</name>
+  <description>EveMail account management library</description>
+  <url>https://github.com/OrbitalEnterprises/orbital-evemail</url>
+
+  <properties>
+    <enterprises.orbital.evekit.build.timestamp>${maven.build.timestamp}</enterprises.orbital.evekit.build.timestamp>
+    <enterprises.orbital.evemail.db.driver>com.mysql.jdbc.Driver</enterprises.orbital.evemail.db.driver>
+    <enterprises.orbital.evemail.db.dialect>org.hibernate.dialect.MySQLDialect</enterprises.orbital.evemail.db.dialect>
+    <orbital.toolchain.version>2.3.0</orbital.toolchain.version>
+    <swagger.version>1.5.7</swagger.version>
+    <jackson.core.version>2.4.5</jackson.core.version>
+    <mysql.connector.version>5.1.38</mysql.connector.version>
+    <log4j.version>1.2.17</log4j.version>
+    <esi.client.version>1.0.0.20171020</esi.client.version>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+      <groupId>enterprises.orbital</groupId>
+      <artifactId>oauth</artifactId>
+      <version>${orbital.toolchain.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>enterprises.orbital</groupId>
+      <artifactId>db-manager</artifactId>
+      <version>${orbital.toolchain.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>enterprises.orbital.eve.esi</groupId>
+      <artifactId>client</artifactId>
+      <version>${esi.client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>${mysql.connector.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <finalName>evemail-${project.artifactId}-${project.version}</finalName>
+  </build>
+</project>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="evemail">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link type="text/css" rel="stylesheet" href="vendor/jquery-ui-1.11.1/jquery-ui.min.css">
+<link type="text/css" rel="stylesheet" href="vendor/font-awesome-4.6.3/css/font-awesome.min.css">
+<link type="text/css" rel="stylesheet" href="themes/default/bootstrap/css/bootstrap.min.css">
+<link type="text/css" rel="stylesheet" href="themes/default/bootstrap/css/bootstrap-theme.min.css">
+<link type="text/css" rel="stylesheet" href="css/auth-buttons.css">
+<link type="text/css" rel="stylesheet" href="css/evekit.css">
+<link type="text/css" rel="stylesheet" href="themes/default/evekit.css">
+<script src="vendor/jquery-2.1.1.min.js"></script>
+<script src="vendor/jquery-ui-1.11.1/jquery-ui.min.js"></script>
+<script src="vendor/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+<script src="vendor/angular-1.3.0/angular.min.js"></script>
+<script src="vendor/angular-1.3.0/angular-resource.min.js"></script>
+<script src="vendor/angular-1.3.0/angular-sanitize.min.js"></script>
+<script src="vendor/URI.js"></script>
+<script src="vendor/angular-vertilize.min.js"></script>
+<script src="vendor/jquery.timepicker.min.js"></script>
+<script src="js/swagger-client.min.js"></script>
+<script src="js/remote.js"></script>
+<script src="js/services-ws.js"></script>
+<script src="js/dialog.js"></script>
+<script src="js/evemail.js"></script>
+<link rel="shortcut icon" href="resources/favicon.ico" />
+<title>EveMail</title>
+</head>
+<body ng-controller="EveMailCtrl" style="padding-bottom: 70px;" ng-cloak>
+
+	<!-- Header -->
+	<img src="resources/images/logo_lettering_128_128.png" alt="EveMail Logo" class="float-left" style="margin-top: -10px; margin-left: 20px;">
+	<span id="evemail-title" style="font-size: 5em; font-style: italic; vertical-align: middle; padding-left: 20px;">EveMail</span>
+	<br><br>
+
+    <!-- Not logged in display -->
+	<div style="margin-left: 30px; margin-right: 30px; margin-bottom: 10px;" ng-hide="userInfo != null">
+		<div class="row">
+			<div class="col-sm-12">
+				<p>
+					EveMail provides access to EVE Online in-game mail via standard internet e-mail clients.
+					Messages received in game are converted to internet e-mail standards, and can be accessed
+					through the IMAP or POP protocols.  E-mail can also be sent via the SMTP protocol, which
+					is converted to in-game mail and sent to the appropriate destinations.
+				</p>
+				<p>
+					To get started with EveMail, use the log in button below.  EveMail will request authorization
+					for in-game mail access via the EVE Swagger Interface (ESI).  Once logged in, EveMail
+					will provide an account name and password which you can use to configure your internet
+					e-mail client.
+				</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="button" class="btn btn-primary btn-auth btn-eve"
+						onclick="window.location = 'api/ws/v1/account/login';">
+					<b>Authorize EVE Online Mail Access</b>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Logged in display -->
+	<div style="margin-left: 30px; margin-right: 30px; margin-bottom: 10px;" ng-hide="userInfo == null">
+		<div class="row">
+			<div class="col-sm-offset-1 col-sm-11">
+				<table style="border-collapse: separate; border-spacing: 5px;">
+					<tr>
+						<td valign="middle" align="center">
+							<img width="64px" height="64px" style="border-width: 2px; border-style: solid;" ng-src="{{'https://image.eveonline.com/character/' + userInfo.characterID + '_128.jpg'}}">
+						</td>
+						<td></td>
+						<td valign="middle" align="center">
+							<img width="64px" height="64px" style="border-width: 2px; border-style: solid;" ng-src="{{'https://image.eveonline.com/corporation/' + userInfo.corporationID + '_128.png'}}">
+						</td>
+					</tr>
+					<tr>
+						<td valign="top" align="center" style="padding-bottom: 20px;">{{userInfo.characterName}}</td>
+						<td></td>
+						<td valign="top"align="center">{{userInfo.corporationName}}</td>
+					</tr>
+					<tr>
+						<td align="right"><b>Account Name:&nbsp;</b></td>
+						<td align="left" colspan="2">{{userInfo.accountName}}</td>
+					</tr>
+					<tr>
+						<td align="right"><b>Account Password:&nbsp;</b></td>
+						<td align="left" colspan="2">
+							{{showPassword ? accountPassword : '#'.repeat(10)}}
+							<div class="btn-group" style="padding-left: 20px;">
+								<button type="button" class="btn btn-default" ng-hide="showPassword" ng-click="retrievePassword(); showPassword=true;">Show</button>
+								<button type="button" class="btn btn-default" ng-hide="! showPassword" ng-click="showPassword=false;">Hide</button>
+								<button type="button" class="btn btn-default" ng-click="changePassword();">Change</button>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>Token State:&nbsp;</b></td>
+						<td align="left" colspan="2">
+							<h3 style="margin: 5px;">
+								<span class="label label-primary" ng-hide="! userInfo.valid">Valid</span>
+								<span class="label label-primary" ng-hide="userInfo.valid"
+									  onclick="window.location = 'api/ws/v1/account/reauth';">Invalid - Re-Authorize</span>
+							</h3>
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>Creation Date:&nbsp;</b></td>
+						<td align="left" colspan="2">
+							{{userInfo.createDate|date:'yyyy-MM-dd HH:mm:ss':'UTC'}}
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>Last E-mail Access:&nbsp;</b></td>
+						<td align="left" colspan="2">
+							{{userInfo.lastAccess !== -1 ? (userInfo.lastAccess|date:'yyyy-MM-dd HH:mm:ss':'UTC') : 'Never'}}
+						</td>
+					</tr>
+					<tr>
+						<td align="center" valign="top" style="padding-top: 40px;">
+							<button type="button" class="btn btn-primary"
+									onclick="window.location = 'api/ws/v1/account/logout';">
+								<b>Logout</b>
+							</button>
+						</td>
+						<td></td>
+						<td align="center" valign="top" style="padding-top: 40px;">
+							<button type="button" class="btn btn-danger"
+									onclick="window.location = 'api/ws/v1/account/delete';">
+								<b>Delete Account</b>
+							</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<!-- Change Password Dialog -->
+		<div id="changePassword" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pwModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="pwModalLabel">Change Account Password</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" style="margin-top: 10px; margin-left: 20px; margin-right: 20px;">
+							<div class="form-group">
+								<label for="newPassword">New Password</label>
+								<input id="newPassword" type="password" class="form-control" placeholder="4-12 character password" ng-model="newPassword">
+							</div>
+							<div class="form-group">
+								<label for="renewPassword">Repeat New Password</label>
+								<input id="renewPassword" type="password" class="form-control" placeholder="retype password" ng-model="renewPassword">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal"
+								ng-click="updatePassword();" ng-disabled="isFormInvalid()">CHANGE</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-top: 20px;">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+							Configuring your E-mail Client
+						</a>
+					</h4>
+				</div>
+				<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+						<p>
+							EveMail supports SMTP for sending e-mail, and IMAP or POP for retrieving e-mail.
+							below.  Connectivity information is as follows:
+						</p>
+						<table class="table table-responsive">
+							<tr>
+								<th>Protocol</th>
+								<th>Host</th>
+								<th>Port</th>
+							</tr>
+							<tr>
+								<td>SMTP</td>
+								<td>evemail.orbital.enterprises</td>
+								<td>25</td>
+							</tr>
+							<tr>
+								<td>SMTP/SSL</td>
+								<td>evemail.orbital.enterprises</td>
+								<td>465</td>
+							</tr>
+							<tr>
+								<td>IMAP</td>
+								<td>evemail.orbital.enterprises</td>
+								<td>143</td>
+							</tr>
+							<tr>
+								<td>IMAP/SSL</td>
+								<td>evemail.orbital.enterprises</td>
+								<td>993</td>
+							</tr>
+							<tr>
+								<td>POP</td>
+								<td>evemail.orbital.enterprises</td>
+								<td>110</td>
+							</tr>
+							<tr>
+								<td>POP/SSL</td>
+								<td>evemail.orbital.enterprises</td>
+								<td>995</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingTwo">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+							Sending and Receiving Mail
+						</a>
+					</h4>
+				</div>
+				<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+					<div class="panel-body">
+						<p>
+							To send and receive e-mail using the EveMail server, you need to understand how EveMail
+							maps EVE online entities into internet e-mail addresses (and vice versa).  For each EVE Online
+							entity, EveMail creates a corresponding internet e-mail address of the form:
+						</p>
+						<p style="text-indent: 30px;">
+							<code>"<i>entity-name</i>" &lt;<i>entity-id</i>@<i>entity-type</i>.evemail.orbital.enterprises&gt;</code>
+						</p>
+						<p>
+							where:
+						</p>
+						<ul>
+							<li><i>entity-name</i> is the in-game name of a character, corporation or alliance; </li>
+							<li><i>entity-id</i> is the unique numeric ID of this entity (as referenced in the ESI); and,</li>
+							<li><i>entity-type</i> is one of <i>char</i>, <i>corp</i>, or <i>alliance</i>.</li>
+						</ul>
+						<p>
+							For example, the in-game character:
+						</p>
+						<p style="text-indent: 30px;">
+							<code>Salacious Necrosis</code>
+						</p>
+						<p>
+							becomes:
+						</p>
+						<p style="text-indent: 30px;">
+							<code>"Salacious Necrosis" &lt;91891554@char.evemail.orbital.enterprises&gt;</code>
+						</p>
+						<p>
+							This translation occurs automatically when EveMail delivers mail to your mail client,
+							and when EveMail processes mail that you request to be sent.
+						</p>
+						<p>
+							You can reply to incoming mail using the usual mechanisms for your e-mail client (e.g. click
+							the "reply" button).  This works because addresses in incoming mail are already translated: the
+							reply address will already be properly formatted for EveMail.
+						</p>
+						<p>
+							Sending e-mail would normally require the sender to know the proper internet e-mail address
+							of the recipients.  However, since it is inconvenient to require users to provide numeric
+							IDs, EveMail supports two alternate address forms:
+						</p>
+						<p style="text-indent: 30px;">
+							<code>&lt;"entity name"@entity-type.evemail.orbital.enterprises&gt;</code>
+						</p>
+						<p style="text-indent: 30px;">
+							<code>&lt;entity-name-with-dashes@entity-type.evemail.orbital.enterprises&gt;</code>
+						</p>
+						<p>
+							Since it is inconvenient to remember the numeric ID of entities,
+
+							To reply to incoming mail
+							Since incoming e-mail is already translated, you can simply reply to incoming e-mail in order
+							to send a response
+
+							This translation occurs for any entity referenced in the "from" and "recipients" list
+							of an in-game mail.  When sending e-mail via the EveMail server, the reverse process happens:
+							internet e-mail addresses of the above form are translated back into ESI entity IDs in order to
+							construct and send in-game mail.
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingThree">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+							Mail Translation
+						</a>
+					</h4>
+				</div>
+				<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+					<div class="panel-body">
+						TODO
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingFour">
+					<h4 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+							Frequently Asked Questions
+						</a>
+					</h4>
+				</div>
+				<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+					<div class="panel-body">
+						<ol>
+							<li>
+								<b>What address fields are supported?  Can I use BCC?</b><br><br>
+								EveMail supports addressing mail with "TO", "FROM", "CC" and "BCC".  "TO", "CC" and "BCC"
+								are combined together to form a recipients list.  Note that EVE Online mail doesn't support
+								blind carbon-copy, hence "BCC" addresses are simply added to the recipient list.
+							</li>
+						</ol>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <!-- Standard Dialogs and Messages Section -->
+    <div ng-controller="DialogCtrl">
+        <div id="evekit-dialog" class="modal" tabindex="-1" role="dialog"
+             aria-labelledby="evekitModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header bg-{{visibleDialog.dialogClass}}">
+                        <h4 class="modal-title">
+                            <b>{{visibleDialog.messageType}}</b>
+                        </h4>
+                    </div>
+                    <div class="modal-body bg-{{visibleDialog.dialogClass}}" ng-bind-html="renderVisibleDialog"></div>
+                    <div class="modal-footer bg-{{visibleDialog.dialogClass}}">
+                        <button style="margin-right: 5px;"
+                                ng-repeat="btn in visibleDialog.buttons" type="button"
+                                class="btn btn-{{visibleDialog.dialogClass}}"
+                                ng-click="handleDialogComplete(visibleDialog.id, visibleDialog.cb, $index)">{{btn}}</button>
+                        <div class="progress" ng-hide="visibleDialog.delay < 0"  style="margin-top: 5px;">
+                            <div class="progress-bar progress-bar-{{visibleDialog.dialogClass}} progress-bar-striped active"
+                                 role="progressbar" aria-valuenow="{{visibleDialog.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{visibleDialog.progress}}%">
+                                <span class="sr-only">{{visibleDialog.progress}}% Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="evekit-message"
+             style="position: absolute; z-index: 10000; padding: 5px; border: 2px solid;"
+             ng-hide="visibleMessage == null"
+             class="alert alert-{{visibleMessage.dialogClass}}" role="alert">
+            <b>{{visibleMessage.messageType}}:</b>&nbsp;&nbsp;<span ng-bind-html="renderVisibleMessage"></span>&nbsp;&nbsp;
+            <button style="margin-right: 5px;"
+                    ng-repeat="btn in visibleMessage.buttons" type="button"
+                    class="btn btn-{{visibleMessage.dialogClass}}"
+                    ng-click="handleMessageComplete(visibleMessage.id, visibleMessage.cb, $index)">{{btn}}</button>
+            <div class="progress"  ng-hide="visibleMessage.delay < 0" style="margin-top: 5px;">
+                <div class="progress-bar progress-bar-{{visibleMessage.dialogClass}} progress-bar-striped active"
+                     role="progressbar" aria-valuenow="{{visibleMessage.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{visibleMessage.progress}}%">
+                    <span class="sr-only">{{visibleMessage.progress}}% Complete</span>
+                </div>
+            </div>
+        </div>
+	</div>
+
+    <!-- Footer -->
+	<nav id="bottom-nav" class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+    <table style="width: 100%">
+      <tr>
+        <td style="white-space: nowrap; width: 100%; text-align: left">
+	   	    <a href="https://www.youtube.com/channel/UC6uATBICpSfi4kCneqxU_8Q/feed"><img src="resources/YouTube-logo-full_color.png" height="46px"></a>
+    		  <a href="http://blog.orbital.enterprises/"><img src="resources/blogger-logo-medium.png" height="20px"></a>
+        </td>
+        <td class="evekit-about" style="white-space: nowrap; padding-right: 10px" ng-controller="VersionCtrl">
+  			  <span class="evekit-branch" title="Build {{evemailBuildDate}}">EveMail Version {{evemailVersion}}</span><br />
+  			  <span>&copy; evemail.orbital.enterprises 2017 -- EVE Online is &copy; CCP Games 1997-2017</span>
+        </td>
+      </tr>
+    </table>
+	</nav>
+    <script type="text/javascript">
+        // Initialize dialog
+        $('#evekit-dialog').modal({
+            backdrop : 'static',
+            keyboard : false,
+            show : false
+        });
+    </script>
+</body>
+</html>

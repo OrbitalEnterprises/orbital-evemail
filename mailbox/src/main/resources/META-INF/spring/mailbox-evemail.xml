@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.    
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="evemail-mailboxIdFactory" class="enterprises.orbital.evemail.mailbox.InMemoryId.Factory" />
+
+    <!-- 
+      Mailbox evemail
+     -->
+    <!-- WARNING: evemail does not persist the mailbox. -->
+    <!--          Information will be lost after jvm restart. -->
+    <!--<bean id="evemail-mailboxManager" class="org.apache.james.mailbox.store.StoreMailboxManager" init-method="init">-->
+
+    <bean id="evemail-mailboxManager" class="enterprises.orbital.evemail.mailbox.InMemoryMailboxManager" init-method="init">
+        <constructor-arg index="0" ref="evemail-sessionMapperFactory"/>
+        <constructor-arg index="1" ref="authenticator"/>
+        <constructor-arg index="2" ref="authorizator"/>
+        <constructor-arg index="3" ref="evemail-locker"/>
+        <constructor-arg index="4" ref="aclResolver"/>
+        <constructor-arg index="5" ref="groupMembershipResolver"/>
+        <constructor-arg index="6" ref="messageParser"/>
+        <constructor-arg index="7" ref="messageIdFactory" />
+        <constructor-arg index="8" ref="dispatcher" />
+        <constructor-arg index="9" ref="delegating-listener" />
+<!--         <property name="messageSearchIndex" ref="lazyIndex"/> -->
+        <property name="quotaManager" ref="quotaManager"/>
+        <property name="quotaRootResolver" ref="quotaRootResolver"/>
+        <property name="quotaUpdater" ref="quotaUpdater"/>
+    </bean>
+
+    <bean id ="evemail-subscriptionManager" class="org.apache.james.mailbox.store.StoreSubscriptionManager">
+        <constructor-arg index="0" ref="evemail-sessionMapperFactory"/>
+    </bean>
+
+    <bean id="evemail-sessionMapperFactory" class="enterprises.orbital.evemail.mailbox.InMemoryMailboxSessionMapperFactory" />
+
+    <alias name="jvm-locker" alias="evemail-locker"/>
+
+    <bean id="evemail-mailbox-id-deserializer" class="enterprises.orbital.evemail.mailbox.InMemoryMailboxIdDeserializer"/>
+
+</beans>
