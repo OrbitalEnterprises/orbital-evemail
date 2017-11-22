@@ -23,7 +23,7 @@
        xsi:schemaLocation="
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="evemail-mailboxIdFactory" class="enterprises.orbital.evemail.enterprises.orbital.evemail.mailbox.InMemoryId.Factory" />
+    <bean id="evemail-mailboxIdFactory" class="enterprises.orbital.evemail.mailbox.InMemoryId.Factory" />
 
     <!-- 
       Mailbox evemail
@@ -32,7 +32,7 @@
     <!--          Information will be lost after jvm restart. -->
     <!--<bean id="evemail-mailboxManager" class="org.apache.james.enterprises.orbital.evemail.mailbox.store.StoreMailboxManager" init-method="init">-->
 
-    <bean id="evemail-mailboxManager" class="enterprises.orbital.evemail.enterprises.orbital.evemail.mailbox.InMemoryMailboxManager" init-method="init">
+    <bean id="evemail-mailboxManager" class="enterprises.orbital.evemail.mailbox.InMemoryMailboxManager" init-method="init">
         <constructor-arg index="0" ref="evemail-sessionMapperFactory"/>
         <constructor-arg index="1" ref="authenticator"/>
         <constructor-arg index="2" ref="authorizator"/>
@@ -49,14 +49,14 @@
         <property name="quotaUpdater" ref="quotaUpdater"/>
     </bean>
 
-    <bean id ="evemail-subscriptionManager" class="org.apache.james.enterprises.orbital.evemail.mailbox.store.StoreSubscriptionManager">
+    <bean id ="evemail-subscriptionManager" class="org.apache.james.mailbox.store.StoreSubscriptionManager">
         <constructor-arg index="0" ref="evemail-sessionMapperFactory"/>
     </bean>
 
-    <bean id="evemail-sessionMapperFactory" class="enterprises.orbital.evemail.enterprises.orbital.evemail.mailbox.InMemoryMailboxSessionMapperFactory" />
+    <bean id="evemail-sessionMapperFactory" class="enterprises.orbital.evemail.mailbox.InMemoryMailboxSessionMapperFactory" />
 
     <alias name="jvm-locker" alias="evemail-locker"/>
 
-    <bean id="evemail-enterprises.orbital.evemail.mailbox-id-deserializer" class="enterprises.orbital.evemail.enterprises.orbital.evemail.mailbox.InMemoryMailboxIdDeserializer"/>
+    <bean id="evemail-mailbox-id-deserializer" class="enterprises.orbital.evemail.mailbox.InMemoryMailboxIdDeserializer"/>
 
 </beans>

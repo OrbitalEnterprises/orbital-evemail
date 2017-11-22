@@ -59,8 +59,8 @@ public class EveMailMatcher extends GenericMatcher {
         case "char.evemail.orbital.enterprises":
         case "corp.evemail.orbital.enterprises":
         case "alliance.evemail.orbital.enterprises":
-        case "ml.evemail.orbital.enterprises":
-          log("Forwarding to ESI: " + next);
+//        case "ml.evemail.orbital.enterprises":
+          // TODO: find out whether it is possible to map name to mailing list
           toprocess.add(next);
           break;
 

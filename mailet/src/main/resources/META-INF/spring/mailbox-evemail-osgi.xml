@@ -26,13 +26,13 @@
 
         <osgi:service ref="evemail-mailboxManager">
             <osgi:interfaces>
-                <beans:value>org.apache.james.enterprises.orbital.evemail.mailbox.MailboxManager</beans:value>
+                <beans:value>org.apache.james.mailbox.MailboxManager</beans:value>
             </osgi:interfaces>
         </osgi:service>
 
         <osgi:service ref="evemail-subscriptionManager">
             <osgi:interfaces>
-                <beans:value>org.apache.james.enterprises.orbital.evemail.mailbox.SubscriptionManager</beans:value>
+                <beans:value>org.apache.james.mailbox.SubscriptionManager</beans:value>
             </osgi:interfaces>
         </osgi:service>
 

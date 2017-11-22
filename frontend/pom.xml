@@ -24,7 +24,7 @@
         <enterprises.orbital.auth.eve_verify_url>https://login.eveonline.com/oauth/verify</enterprises.orbital.auth.eve_verify_url>
         <enterprises.orbital.accountLimit>50</enterprises.orbital.accountLimit>
         <orbital.toolchain.version>2.3.0</orbital.toolchain.version>
-	    <evemail.version>1.0.0</evemail.version>
+        <evemail.version>1.0.0</evemail.version>
         <servlet.version>3.1.0</servlet.version>
         <swagger.version>1.5.7</swagger.version>
         <jackson.core.version>2.4.5</jackson.core.version>

@@ -349,8 +349,8 @@ public class EveMailAccount implements UserAccount, PersistentPropertyKey<String
       // Key within expiry window, refresh
       String refreshToken = account.getRefreshToken();
       if (refreshToken == null) throw new IOException("No valid refresh token for key: " + charid);
-      String eveClientID = OrbitalProperties.getGlobalProperty(EveMailAccountProvider.PROP_EVE_TOKEN_CLIENT_ID);
-      String eveSecretKey = OrbitalProperties.getGlobalProperty(EveMailAccountProvider.PROP_EVE_TOKEN_SECRET_KEY);
+      String eveClientID = OrbitalProperties.getGlobalProperty(EveMailAccountProvider.PROP_EVE_AUTH_CLIENT_ID);
+      String eveSecretKey = OrbitalProperties.getGlobalProperty(EveMailAccountProvider.PROP_EVE_AUTH_SECRET_KEY);
       OAuth2AccessToken newToken = EVEAuthHandler.doRefresh(eveClientID, eveSecretKey, refreshToken);
       if (newToken == null) {
         // Invalidate refresh token

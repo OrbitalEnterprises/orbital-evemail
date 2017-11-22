@@ -53,21 +53,21 @@ public class InMemoryMailboxManager extends StoreMailboxManager {
         super(mailboxSessionMapperFactory, authenticator, authorizator, locker, aclResolver, groupMembershipResolver, messageParser, messageIdFactory,
             MailboxConstants.DEFAULT_LIMIT_ANNOTATIONS_ON_MAILBOX, MailboxConstants.DEFAULT_LIMIT_ANNOTATION_SIZE, dispatcher,
             delegatingMailboxListener);
-        LOGGER.warn("Starting EveMail mailbox");
+        LOGGER.warn("Starting EveMail enterprises.orbital.evemail.mailbox");
     }
 
     public InMemoryMailboxManager(MailboxSessionMapperFactory mailboxSessionMapperFactory, Authenticator authenticator, Authorizator authorizator,
                                   MailboxPathLocker locker, MailboxACLResolver aclResolver, GroupMembershipResolver groupMembershipResolver,
                                   MessageParser messageParser, MessageId.Factory messageIdFactory) {
         super(mailboxSessionMapperFactory, authenticator, authorizator, locker, aclResolver, groupMembershipResolver, messageParser, messageIdFactory);
-        LOGGER.warn("Starting EveMail mailbox");
+        LOGGER.warn("Starting EveMail enterprises.orbital.evemail.mailbox");
     }
 
     public InMemoryMailboxManager(MailboxSessionMapperFactory mailboxSessionMapperFactory, Authenticator authenticator,  Authorizator authorizator,
             MailboxACLResolver aclResolver, GroupMembershipResolver groupMembershipResolver, MessageParser messageParser,
             MessageId.Factory messageIdFactory, int limitOfAnnotations, int limitAnnotationSize) {
         super(mailboxSessionMapperFactory, authenticator, authorizator, aclResolver, groupMembershipResolver, messageParser, messageIdFactory, limitOfAnnotations, limitAnnotationSize);
-        LOGGER.warn("Starting EveMail mailbox");
+        LOGGER.warn("Starting EveMail enterprises.orbital.evemail.mailbox");
     }
 
     @Override
